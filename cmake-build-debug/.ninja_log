@@ -1,0 +1,14 @@
+# ninja log v5
+3	859	1701122991240740213	CMakeFiles/Lab3.dir/components/fighters/Fighter.cpp.o	9a80ef38fb3411ba
+3	842	1701122991221499567	CMakeFiles/Lab3.dir/components/echelon/Echelon.cpp.o	ddf93dbf7810cdbd
+4	841	1701122991222376403	CMakeFiles/Lab3.dir/components/weapons/Weapon.cpp.o	f97d07bd42396a17
+3	569	1701123013457276345	CMakeFiles/Lab3.dir/components/fighters/rebFighter/REBFighter.cpp.o	7bd24f7f38715d1
+3	534	1701123013421462771	CMakeFiles/Lab3.dir/components/fighters/scoutFighter/ScoutFighter.cpp.o	fb30d53f91355b5f
+3	523	1701123013408995188	CMakeFiles/Lab3.dir/components/fighters/proFighter/PROFighter.cpp.o	24fd70e9d235bc8d
+0	56	1701123207201111562	build.ninja	daa049aa8b4301bb
+561	695	1701123062812891330	Lab3	f0064f0f8d0f2d9c
+3	861	1701122991242608803	CMakeFiles/Lab3.dir/main.cpp.o	d5ea090b434c79f8
+2	561	1701123062678529224	CMakeFiles/Lab3.dir/components/weapons/rocket/RocketLauncher.cpp.o	a28558ecd3c1e74d
+3	854	1701122991234351150	CMakeFiles/Lab3.dir/components/fighters/camouflagedFighter/CamouflageFighter.cpp.o	324cd05d9bd02002
+3	545	1701123013429258380	CMakeFiles/Lab3.dir/components/fighters/radioFighter/RadioFighter.cpp.o	9dc72924d1fcdca
+2	542	1701123013428813545	CMakeFiles/Lab3.dir/components/weapons/gun/Gun.cpp.o	3e2165f2b0c661ba
