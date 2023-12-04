@@ -13,12 +13,18 @@ public:
     int maxHP;
     int speed;
     int maxNumEquipment;
-    std::vector<Weapon *> equipment;
+    std::vector<std::unique_ptr<Weapon>> equipment;
     std::pair<int, int> coordinates;
     int detectionRadius;
 public:
-    Fighter(std::string _model, int _maxHP, int speed, int maxNumEquipment, std::vector<Weapon *> equipment,
-            std::pair<int, int> coordinates, int detectionRadius);
+    Fighter(std::string
+            _model, int
+            _maxHP, int
+            _speed, int
+            _maxNumEquipment, std::vector<std::unique_ptr<Weapon>> _equipment,
+            std::pair<int, int>
+            _coordinates, int
+            _detectionRadius);
 
     [[nodiscard]] std::string getModel() const { return model; };
 
@@ -40,9 +46,9 @@ public:
 
     void setMaxNumEquipment(int value) { maxNumEquipment = value; };
 
-    [[nodiscard]] std::vector<Weapon *> getEquipment() const { return equipment; }
+    [[nodiscard]] const std::vector<std::unique_ptr<Weapon>> &getEquipment() const { return equipment; }
 
-    void setEquipment(const std::vector<Weapon *> &value) { equipment = value; };
+    void setEquipment(std::vector<std::unique_ptr<Weapon>> newEquipment) { equipment = std::move(newEquipment); }
 
     [[nodiscard]] std::pair<int, int> getCoordinates() const { return coordinates; };
 

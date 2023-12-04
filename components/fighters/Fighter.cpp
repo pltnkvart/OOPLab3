@@ -49,8 +49,7 @@ Fighter::Fighter(std::string
                  _model, int
                  _maxHP, int
                  _speed, int
-                 _maxNumEquipment, std::vector<Weapon *>
-                 _equipment,
+                 _maxNumEquipment, std::vector<std::unique_ptr<Weapon>> _equipment,
                  std::pair<int, int>
                  _coordinates, int
                  _detectionRadius) {

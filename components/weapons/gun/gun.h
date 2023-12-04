@@ -8,7 +8,7 @@ class Gun : public Weapon {
 private:
     int hitPercentage;
 public:
-    Gun(std::string, int dmg, int attackRad, int shootingSpeed, int hitPer);
+    Gun(std::string, int _dmg, int _attackRad, int _shootingSpeed, int _hitPer);
 
     [[nodiscard]] int getHitPercentage() const { return hitPercentage; };
 

@@ -28,7 +28,7 @@ public:
 
     void setShootingSpeed(int value) { shootingSpeed = value; };
 
-    WeaponType getWeaponType() const { return type; };
+    [[nodiscard]] WeaponType getWeaponType() const { return type; };
 
     virtual Projectile fire() = 0;
 

@@ -8,6 +8,8 @@ private:
     int maxAmmo;
     int currAmmo;
 public:
+    RocketLauncher(std::string, int dmg, int attackRad, int shootingS ,int currAmmo, int maxAmmo);
+
     [[nodiscard]] int getMaxAmmo() const { return maxAmmo; };
 
     void setMaxAmmo(int value) { maxAmmo = value; };
