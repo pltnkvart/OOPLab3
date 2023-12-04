@@ -12,7 +12,7 @@ int main() {
     Fighter Fighter1("f1", 150, 10, 1, weapons, std::pair<int, int> (1, 1), 5);
     Fighter Fighter2("f2", 150, 10, 1, weapons, std::pair<int, int> (1, 1), 10);
 
-    Fighter1.attemptAttack(&Fighter2);
+    Fighter1.attemptAttack(&Fighter2, weapons[0]);
 
     return 0;
 }

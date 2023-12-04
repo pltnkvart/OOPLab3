@@ -21,17 +21,16 @@ int Fighter::getDetectionRadius() {
 }
 
 void Fighter::getDamage(Projectile projectile) {
-    // в гет дамаг добавить вероятность относительно каждого типа самолета
     HP -= projectile.getProjectileDamage();
 }
 
-bool Fighter::attemptAttack(Fighter *target) {
+bool Fighter::attemptAttack(Fighter *target, Weapon *weapon) {
     std::cout << "before shot - " << target->getHP() << std::endl;
 
-    if (this->getAttackRadius() >= target->getDetectionRadius()) {
+    if (weapon->getWeaponAttackRadius() >= target->getDetectionRadius()) {
         std::srand(std::time(nullptr));
         int chance = std::rand() % 100;
-        Projectile prj = this->equipment[0]->fire(); // TODO
+        Projectile prj = weapon->fire();
 
         std::cout << "hit rate - " << prj.getHitRate() << " chance - " << chance << std::endl;
 

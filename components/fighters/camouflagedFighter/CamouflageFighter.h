@@ -11,10 +11,12 @@
 
 class CamouflageFighter : public Fighter {
 private:
-    int hitRocketCoef;
+    int hitGunCoef; // < 1
     int detectionCoef; // < 1
 public:
     int getDetectionRadius() override;
+
+    bool attemptAttack(Fighter *target, Weapon *weapon) override;
 };
 
 

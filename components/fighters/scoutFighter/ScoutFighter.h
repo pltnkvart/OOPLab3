@@ -11,21 +11,12 @@
 class ScoutFighter : public Fighter {
 private:
     int maskingIgnoreCoef;
-    int hitCoef;
+    int hitGunCoef;
     int detectionCoef;
 public:
     int getDetectionRadius() override;
 
-    int getAttackRadius() override {
-        // Реализация для истребителя
-        return 1;
-    }
-
-
-    bool attemptAttack(Fighter *target) override {
-        // Реализация для истребителя
-        return true;
-    }
+    bool attemptAttack(Fighter *target, Weapon *weapon) override;
 };
 
 #endif //_SCOUTFIGHTER_H

@@ -56,7 +56,7 @@ public:
 
     virtual int getDetectionRadius();
 
-    virtual bool attemptAttack(Fighter *target);
+    virtual bool attemptAttack(Fighter *target, Weapon *weapon);
 
     virtual ~Fighter() = default;
 };

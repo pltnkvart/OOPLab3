@@ -10,7 +10,9 @@ class PROFighter : public Fighter {
 private:
     int numberOfCharges;
     int maxNumberOfCharges;
+    int chanceWorking;
 public:
+    void getDamage(Projectile projectile) override;
 };
 
 #endif //_PROFIGHTER_H

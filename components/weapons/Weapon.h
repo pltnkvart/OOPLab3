@@ -28,6 +28,8 @@ public:
 
     void setShootingSpeed(int value) { shootingSpeed = value; };
 
+    WeaponType getWeaponType() const { return type; };
+
     virtual Projectile fire() = 0;
 
     virtual bool isOperational() = 0;

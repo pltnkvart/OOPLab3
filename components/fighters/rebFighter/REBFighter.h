@@ -10,17 +10,9 @@
 
 class REBFighter : public Fighter {
 private:
-    int suppressionCoef;
+    int suppressionCoef; // < 1
 public:
-    int getAttackRadius() override {
-        // Реализация для истребителя
-        return 50;
-    }
-
-    bool attemptAttack(Fighter *target) override {
-        // Реализация для истребителя
-        return true;
-    }
+    bool attemptAttack(Fighter *target, Weapon *weapon) override;
 };
 
 #endif //_REBFIGHTER_H

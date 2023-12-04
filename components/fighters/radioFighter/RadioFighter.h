@@ -12,13 +12,7 @@ class RadioFighter : public Fighter {
 private:
     int maskingIgnoreCoef;
 public:
-//    int getAttackRadius() override {
-//
-//    }
-
-//    bool attemptAttack(Fighter *target) override {
-//        return true;
-//    }
+    bool attemptAttack(Fighter *target, Weapon *weapon) override;
 };
 
 #endif //_RADIOFIGHTER_H
