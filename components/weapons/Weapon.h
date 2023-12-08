@@ -33,6 +33,8 @@ public:
     virtual Projectile fire() = 0;
 
     virtual bool isOperational() = 0;
+
+    virtual ~Weapon() = default;
 };
 
 #endif //_WEAPON_H
