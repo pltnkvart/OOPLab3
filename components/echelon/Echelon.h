@@ -7,17 +7,15 @@
 
 class Echelon {
 private:
-    std::list<Fighter *> fighters;
+    std::list<std::unique_ptr<Fighter>> fighters;
     std::string command;
     std::pair<int, int> coordinates;
 public:
-    bool addFighter(Fighter fighter);
+    void addFighter(std::unique_ptr<Fighter> fighter);
 
     Fighter removeFighter(int number);
 
-    int getDetectionRadius();
-
-    int getStealth();
+    int getEchelonDetectionRadius();
 
     [[nodiscard]] int getNumFighters() const { return static_cast<int>(fighters.size()); }
 };
