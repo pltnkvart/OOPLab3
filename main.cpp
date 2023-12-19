@@ -7,7 +7,7 @@
 
 // как сделать в зависимости от типа истребители отображать его поля ??.....
 Texture groundTexture;
-
+bool isGameStarted = false;
 Echelon echelon;
 Echelon echelon1;
 
@@ -42,7 +42,7 @@ void initializeEchelons() {
     echelon1.addFighter(fighter4);
 }
 
-BoundingBox RotateBoundingBox(const BoundingBox& box, float angleDegrees) {
+BoundingBox RotateBoundingBox(const BoundingBox &box, float angleDegrees) {
     float angleRadians = DEG2RAD * angleDegrees;
     Matrix rotationMatrix = MatrixRotateX(angleRadians);
     Vector3 rotatedMin = Vector3Transform(box.min, rotationMatrix);
@@ -54,8 +54,9 @@ BoundingBox RotateBoundingBox(const BoundingBox& box, float angleDegrees) {
 }
 
 
-void drawEchelon(Model plane, BoundingBox bounds, Camera3D camera, std::shared_ptr<Fighter> &selectedFighter, Echelon echelon, Color color) {
-    DrawPlane((Vector3){0.0f, 0.0f, 0.0f}, (Vector2){15.0f, 15.0f}, WHITE);
+void drawEchelon(Model plane, BoundingBox bounds, Camera3D camera, std::shared_ptr<Fighter> &selectedFighter,
+                 Echelon echelon, Color color) {
+    DrawPlane((Vector3) {0.0f, 0.0f, 0.0f}, (Vector2) {15.0f, 15.0f}, WHITE);
     for (const auto &fighter: echelon.getFighters()) {
         int x = fighter->getCoordinates().first;
         int y = fighter->getCoordinates().second;
@@ -66,7 +67,8 @@ void drawEchelon(Model plane, BoundingBox bounds, Camera3D camera, std::shared_p
         transformedBounds.min = Vector3Transform(transformedBounds.min, transformation);
         transformedBounds.max = Vector3Transform(transformedBounds.max, transformation);
         Vector3 shadowPosition = {position.x, 0.1f, position.z};
-        DrawModelEx(plane, shadowPosition, (Vector3){1.0f, 0.0f, 0.0f}, 90.0f, (Vector3){0.05f, 0.05f, 0.0f}, Fade(BLACK, 0.5f));
+        DrawModelEx(plane, shadowPosition, (Vector3) {1.0f, 0.0f, 0.0f}, 90.0f, (Vector3) {0.05f, 0.05f, 0.0f},
+                    Fade(BLACK, 0.5f));
         DrawModelEx(plane, position, (Vector3) {1.0f, 0.0f, 0.0f},
                     90.0f, (Vector3) {0.05f, 0.05f, 0.05f}, WHITE);
         DrawBoundingBox(transformedBounds, color);
@@ -95,8 +97,8 @@ int main() {
     Camera3D camera = initCamera();
 
     // Menu buttons
-    Rectangle startButton = {screenWidth / 2 - 100, 200, 200, 50};
-    Rectangle exitButton = {screenWidth / 2 - 100, 300, 200, 50};
+    Rectangle startButton = {screenWidth / 2 - 100, 300, 200, 50};
+    Rectangle exitButton = {screenWidth / 2 - 100, 400, 200, 50};
 
     // Load Plane Model
     Model plane = LoadModel("../resources/models/fighters/fighter1.glb");
@@ -110,44 +112,50 @@ int main() {
     float scrollingBack = 0.0f;
     groundTexture = LoadTexture("../resources/ground_texture.jpg");
 
-    DisableCursor();
     SetTargetFPS(120);
+
     //--------------------------------------------------------------------------------------
     // Main game loop
-    while (!WindowShouldClose())        // Detect window close button or ESC key
-    {
-        // Update
-        //----------------------------------------------------------------------------------
-        scrollingBack -= 0.1f;
-        if(!selectedFighter){
-            UpdateCamera(&camera, CAMERA_FREE);
-        }
-
-        if (IsKeyPressed('Z')) camera.target = (Vector3) {0.0f, 0.0f, 0.0f};
-
-        if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
-            if (IsCursorHidden()) EnableCursor();
-            else DisableCursor();
-        }
-
-        //----------------------------------------------------------------------------------
-        // Draw
-        //----------------------------------------------------------------------------------
+    while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawTextureEx(background, (Vector2) {scrollingBack, 0}, 0.0f, 2.0f, WHITE);
-        BeginMode3D(camera);
-        drawEchelon(plane, bounds, camera, selectedFighter, echelon, RED);
-        drawEchelon(plane, bounds, camera, selectedFighter, echelon1, LIME);
-//        DrawGrid(10, 2.0f);
-        EndMode3D();
-        if (selectedFighter) {
-            drawPlaneInfo(selectedFighter);
+        if (!isGameStarted) {
+            DrawText("Squadron Battle", screenWidth / 2 - MeasureText("Squadron Battle", 40) / 2, 140, 40, BLACK);
+            DrawRectangleRec(startButton, GRAY);
+            DrawText("Start Game", startButton.x + 40, startButton.y + 15, 20, BLACK);
+            DrawRectangleRec(exitButton, GRAY);
+            DrawText("Exit", exitButton.x + 80, exitButton.y + 15, 20, BLACK);
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                if (CheckCollisionPointRec(GetMousePosition(), startButton)) {
+                    isGameStarted = true;
+                }
+                if (CheckCollisionPointRec(GetMousePosition(), exitButton)) {
+                    break;
+                }
+            }
+        } else {
+            scrollingBack -= 0.1f;
+            if (IsKeyPressed('Z')) camera.target = (Vector3) {0.0f, 0.0f, 0.0f};
+            if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
+                if (IsCursorHidden()) EnableCursor();
+                else DisableCursor();
+            }
+            if (!selectedFighter) {
+                UpdateCamera(&camera, CAMERA_FREE);
+            }
+            DrawTextureEx(background, (Vector2) {scrollingBack, 0}, 0.0f, 2.0f, WHITE);
+            BeginMode3D(camera);
+            drawEchelon(plane, bounds, camera, selectedFighter, echelon, RED);
+            drawEchelon(plane, bounds, camera, selectedFighter, echelon1, LIME);
+            DrawGrid(10, 2.0f);
+            EndMode3D();
+            if (selectedFighter) {
+                drawPlaneInfo(selectedFighter);
+            }
         }
-        DrawFPS(screenWidth - 30, 10);
         EndDrawing();
-        //----------------------------------------------------------------------------------
     }
+
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
