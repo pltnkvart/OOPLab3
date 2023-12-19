@@ -6,8 +6,10 @@
 #define screenHeight 720
 
 // как сделать в зависимости от типа истребители отображать его поля ??.....
+Texture groundTexture;
 
 Echelon echelon;
+Echelon echelon1;
 
 void drawPlaneInfo(const std::shared_ptr<Fighter> &fighter) {
     DrawRectangle(10, 10, 300, 190, Fade(GRAY, 0.5f));
@@ -28,24 +30,46 @@ void drawPlaneInfo(const std::shared_ptr<Fighter> &fighter) {
 void initializeEchelons() {
     Fighter f1("F-16", 100, 100, 800, 1, {3, 4}, 10);
     Fighter f2("F-1", 90, 100, 800, 1, {-2, 1}, 5);
+    Fighter f3("F-11", 100, 100, 800, 1, {0, -3}, 10);
+    Fighter f4("F-23", 100, 100, 800, 1, {5, -1}, 10);
     auto fighter1 = std::make_shared<Fighter>(f1);
     auto fighter2 = std::make_shared<Fighter>(f2);
+    auto fighter3 = std::make_shared<Fighter>(f3);
+    auto fighter4 = std::make_shared<Fighter>(f4);
     echelon.addFighter(fighter1);
     echelon.addFighter(fighter2);
+    echelon1.addFighter(fighter3);
+    echelon1.addFighter(fighter4);
 }
 
-void drawEchelons(Model plane, BoundingBox bounds, Camera3D camera, std::shared_ptr<Fighter> &selectedFighter) {
+BoundingBox RotateBoundingBox(const BoundingBox& box, float angleDegrees) {
+    float angleRadians = DEG2RAD * angleDegrees;
+    Matrix rotationMatrix = MatrixRotateX(angleRadians);
+    Vector3 rotatedMin = Vector3Transform(box.min, rotationMatrix);
+    Vector3 rotatedMax = Vector3Transform(box.max, rotationMatrix);
+    BoundingBox rotatedBox;
+    rotatedBox.min = Vector3Min(rotatedMin, rotatedMax);
+    rotatedBox.max = Vector3Max(rotatedMin, rotatedMax);
+    return rotatedBox;
+}
+
+
+void drawEchelon(Model plane, BoundingBox bounds, Camera3D camera, std::shared_ptr<Fighter> &selectedFighter, Echelon echelon, Color color) {
+    DrawPlane((Vector3){0.0f, 0.0f, 0.0f}, (Vector2){15.0f, 15.0f}, WHITE);
     for (const auto &fighter: echelon.getFighters()) {
         int x = fighter->getCoordinates().first;
         int y = fighter->getCoordinates().second;
         Vector3 position = {static_cast<float>(x), 3.0f, static_cast<float>(y)};
         Matrix transformation = MatrixTranslate(position.x, 3.0f, position.z);
         BoundingBox transformedBounds = bounds;
+        transformedBounds = RotateBoundingBox(transformedBounds, 90.0f);
         transformedBounds.min = Vector3Transform(transformedBounds.min, transformation);
         transformedBounds.max = Vector3Transform(transformedBounds.max, transformation);
+        Vector3 shadowPosition = {position.x, 0.1f, position.z};
+        DrawModelEx(plane, shadowPosition, (Vector3){1.0f, 0.0f, 0.0f}, 90.0f, (Vector3){0.05f, 0.05f, 0.0f}, Fade(BLACK, 0.5f));
         DrawModelEx(plane, position, (Vector3) {1.0f, 0.0f, 0.0f},
                     90.0f, (Vector3) {0.05f, 0.05f, 0.05f}, WHITE);
-        DrawBoundingBox(transformedBounds, RED);
+        DrawBoundingBox(transformedBounds, color);
         if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
             GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), transformedBounds).hit) {
             selectedFighter = fighter;
@@ -70,6 +94,10 @@ int main() {
     initializeEchelons();
     Camera3D camera = initCamera();
 
+    // Menu buttons
+    Rectangle startButton = {screenWidth / 2 - 100, 200, 200, 50};
+    Rectangle exitButton = {screenWidth / 2 - 100, 300, 200, 50};
+
     // Load Plane Model
     Model plane = LoadModel("../resources/models/fighters/fighter1.glb");
     BoundingBox bounds = GetMeshBoundingBox(plane.meshes[0]);
@@ -80,6 +108,7 @@ int main() {
     // Load Background
     Texture background = LoadTexture("../resources/background/sky2.png");
     float scrollingBack = 0.0f;
+    groundTexture = LoadTexture("../resources/ground_texture.jpg");
 
     DisableCursor();
     SetTargetFPS(120);
@@ -90,7 +119,9 @@ int main() {
         // Update
         //----------------------------------------------------------------------------------
         scrollingBack -= 0.1f;
-        UpdateCamera(&camera, CAMERA_PERSPECTIVE);
+        if(!selectedFighter){
+            UpdateCamera(&camera, CAMERA_FREE);
+        }
 
         if (IsKeyPressed('Z')) camera.target = (Vector3) {0.0f, 0.0f, 0.0f};
 
@@ -106,8 +137,9 @@ int main() {
         ClearBackground(RAYWHITE);
         DrawTextureEx(background, (Vector2) {scrollingBack, 0}, 0.0f, 2.0f, WHITE);
         BeginMode3D(camera);
-        drawEchelons(plane, bounds, camera, selectedFighter);
-        DrawGrid(10, 1.0f);
+        drawEchelon(plane, bounds, camera, selectedFighter, echelon, RED);
+        drawEchelon(plane, bounds, camera, selectedFighter, echelon1, LIME);
+//        DrawGrid(10, 2.0f);
         EndMode3D();
         if (selectedFighter) {
             drawPlaneInfo(selectedFighter);
