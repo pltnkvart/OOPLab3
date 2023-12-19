@@ -28,8 +28,9 @@ bool Fighter::attemptAttack(Fighter *target, Weapon *weapon) {
     std::cout << "before shot - " << target->getHP() << std::endl;
 
     if (weapon->getWeaponAttackRadius() >= target->getDetectionRadius()) {
-        std::srand(std::time(nullptr));
-        int chance = std::rand() % 100;
+        std::mt19937 gen(std::time(nullptr));
+        std::uniform_int_distribution<int> distribution(0, 100);
+        int chance = distribution(gen);
         Projectile prj = weapon->fire();
 
         std::cout << "hit rate - " << prj.getHitRate() << " chance - " << chance << std::endl;

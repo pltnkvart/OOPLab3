@@ -3,8 +3,9 @@
 
 bool REBFighter::attemptAttack(Fighter *target, Weapon *weapon) {
     if (weapon->getWeaponAttackRadius() >= target->getDetectionRadius() * suppressionCoef) {
-        std::srand(std::time(nullptr));
-        int chance = std::rand() % 100;
+        std::mt19937 gen(std::time(nullptr));
+        std::uniform_int_distribution<int> distribution(0, 100);
+        int chance = distribution(gen);
         Projectile prj = weapon->fire();
         if (prj.getHitRate() * suppressionCoef > chance) {
             target->getDamage(prj);

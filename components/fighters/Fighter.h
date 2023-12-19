@@ -4,6 +4,7 @@
 #include <iostream>
 #include <list>
 #include <memory>
+#include <random>
 #include <utility>
 #include "../weapons/Weapon.h"
 
