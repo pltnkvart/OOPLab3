@@ -10,7 +10,7 @@ add_subdirectory(template)
 
 add_executable(Lab3 main.cpp)
 
-target_link_libraries(Lab3 fighters weapons table)
+target_link_libraries(Lab3 fighters weapons table echelon)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

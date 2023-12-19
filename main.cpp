@@ -1,24 +1,56 @@
 #include <raylib.h>
 #include <raymath.h>
+#include "components/echelon/Echelon.h"
 
 #define screenWidth 1280
 #define screenHeight 720
 
+// как сделать в зависимости от типа истребители отображать его поля ??.....
 
-void drawPlaneInfo() {
+Echelon echelon;
+
+void drawPlaneInfo(const std::shared_ptr<Fighter> &fighter) {
     DrawRectangle(10, 10, 300, 190, Fade(GRAY, 0.5f));
     DrawRectangleLines(10, 10, 300, 190, BLACK);
-
-    DrawText("Plane 1 Name", 30, 20, 20, BLACK);
-    DrawText("HP: 20/100", 40, 50, 18, BLACK);
-    DrawText("Speed: 123 km/h", 40, 80, 18, BLACK);
-    DrawText("Coordinates: 3, 4", 40, 110, 18, BLACK);
-    DrawText("Detection Radius: 5", 40, 140, 18, BLACK);
-    DrawText("Max number of equipment: 4", 40, 170, 18, BLACK);
+    DrawText(fighter->getModel().c_str(), 30, 20, 20, BLACK);
+    DrawText(TextFormat("HP: %02i/100", fighter->getHP()), 40, 50, 18, BLACK);
+    DrawText(TextFormat("Speed: %i km/h", fighter->getSpeed()), 40, 80, 18, BLACK);
+    DrawText(TextFormat("Coordinates: %i, %i", fighter->getCoordinates().first, fighter->getCoordinates().second), 40,
+             110, 18, BLACK);
+    DrawText(TextFormat("Detection Radius: %i", fighter->getDetectionRadius()), 40, 140, 18, BLACK);
+    DrawText(TextFormat("Max number of equipment: %i", fighter->getMaxNumEquipment()), 40, 170, 18, BLACK);
 
     DrawRectangle(10, 210, 300, 160, Fade(GRAY, 0.5f));
     DrawRectangleLines(10, 210, 300, 160, BLACK);
     DrawText("Equipment:", 30, 220, 20, BLACK);
+}
+
+void initializeEchelons() {
+    Fighter f1("F-16", 100, 100, 800, 1, {3, 4}, 10);
+    Fighter f2("F-1", 90, 100, 800, 1, {-2, 1}, 5);
+    auto fighter1 = std::make_shared<Fighter>(f1);
+    auto fighter2 = std::make_shared<Fighter>(f2);
+    echelon.addFighter(fighter1);
+    echelon.addFighter(fighter2);
+}
+
+void drawEchelons(Model plane, BoundingBox bounds, Camera3D camera, std::shared_ptr<Fighter> &selectedFighter) {
+    for (const auto &fighter: echelon.getFighters()) {
+        int x = fighter->getCoordinates().first;
+        int y = fighter->getCoordinates().second;
+        Vector3 position = {static_cast<float>(x), 3.0f, static_cast<float>(y)};
+        Matrix transformation = MatrixTranslate(position.x, 3.0f, position.z);
+        BoundingBox transformedBounds = bounds;
+        transformedBounds.min = Vector3Transform(transformedBounds.min, transformation);
+        transformedBounds.max = Vector3Transform(transformedBounds.max, transformation);
+        DrawModelEx(plane, position, (Vector3) {1.0f, 0.0f, 0.0f},
+                    90.0f, (Vector3) {0.05f, 0.05f, 0.05f}, WHITE);
+        DrawBoundingBox(transformedBounds, RED);
+        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) &&
+            GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), transformedBounds).hit) {
+            selectedFighter = fighter;
+        }
+    }
 }
 
 Camera3D initCamera() {
@@ -35,25 +67,21 @@ int main() {
     // Initialization
     //--------------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "MyGame");
-
-    // Define the camera to look into our 3d world
+    initializeEchelons();
     Camera3D camera = initCamera();
 
-    // Plane
+    // Load Plane Model
     Model plane = LoadModel("../resources/models/fighters/fighter1.glb");
-    Vector3 position = {0.0f, 3.0f, 0.0f};
     BoundingBox bounds = GetMeshBoundingBox(plane.meshes[0]);
-    bool selected = false;
-    float Scale = 0.05f;
-    bounds.min = Vector3Scale(bounds.min, Scale);
-    bounds.max = Vector3Scale(bounds.max, Scale);
+    std::shared_ptr<Fighter> selectedFighter;
+    bounds.min = Vector3Scale(bounds.min, 0.05f);
+    bounds.max = Vector3Scale(bounds.max, 0.05f);
 
-    // Background
+    // Load Background
     Texture background = LoadTexture("../resources/background/sky2.png");
     float scrollingBack = 0.0f;
 
-    DisableCursor();                       // Limit cursor to relative movement inside the window
-
+    DisableCursor();
     SetTargetFPS(120);
     //--------------------------------------------------------------------------------------
     // Main game loop
@@ -62,18 +90,13 @@ int main() {
         // Update
         //----------------------------------------------------------------------------------
         scrollingBack -= 0.1f;
-        UpdateCamera(&camera, CAMERA_FREE);
+        UpdateCamera(&camera, CAMERA_PERSPECTIVE);
 
         if (IsKeyPressed('Z')) camera.target = (Vector3) {0.0f, 0.0f, 0.0f};
 
         if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
             if (IsCursorHidden()) EnableCursor();
             else DisableCursor();
-        }
-        // Select model on mouse click
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-            if (GetRayCollisionBox(GetMouseRay(GetMousePosition(), camera), bounds).hit) selected = !selected;
-            else selected = false;
         }
 
         //----------------------------------------------------------------------------------
@@ -83,11 +106,12 @@ int main() {
         ClearBackground(RAYWHITE);
         DrawTextureEx(background, (Vector2) {scrollingBack, 0}, 0.0f, 2.0f, WHITE);
         BeginMode3D(camera);
-        DrawModelEx(plane, position, (Vector3) {1.0f, 0.0f, 0.0f}, 90.0f, (Vector3) {0.05f, 0.05f, 0.05f}, WHITE);
-        DrawBoundingBox(bounds, RED);
+        drawEchelons(plane, bounds, camera, selectedFighter);
         DrawGrid(10, 1.0f);
         EndMode3D();
-        if (selected) drawPlaneInfo();
+        if (selectedFighter) {
+            drawPlaneInfo(selectedFighter);
+        }
         DrawFPS(screenWidth - 30, 10);
         EndDrawing();
         //----------------------------------------------------------------------------------
@@ -95,9 +119,9 @@ int main() {
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
-    UnloadModel(plane);
     UnloadTexture(background);
-    CloseWindow();        // Close window and OpenGL context
+    UnloadModel(plane);
+    CloseWindow();
     //--------------------------------------------------------------------------------------
     return 0;
 }

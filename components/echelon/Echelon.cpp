@@ -1,6 +1,6 @@
 #include "Echelon.h"
 
-void Echelon::addFighter(std::unique_ptr<Fighter> fighter) {
+void Echelon::addFighter(std::shared_ptr<Fighter> fighter) {
     fighters.push_back(std::move(fighter));
 }
 
@@ -14,14 +14,19 @@ Fighter Echelon::removeFighter(int number) {
     return removedFighter;
 }
 
-int Echelon::getEchelonDetectionRadius() {
+int Echelon::getEchelonDetectionRadius() const {
     if (fighters.empty()) {
         return 0;
     }
     auto maxDetectionRadiusFighter = std::max_element(
             fighters.begin(), fighters.end(),
-            [](const std::unique_ptr<Fighter> &a, const std::unique_ptr<Fighter> &b) {
+            [](const std::shared_ptr<Fighter> &a, const std::shared_ptr<Fighter> &b) {
                 return a->detectionRadius < b->detectionRadius;
             });
     return (*maxDetectionRadiusFighter)->detectionRadius;
+}
+
+
+const std::list<std::shared_ptr<Fighter>> &Echelon::getFighters() const {
+    return fighters;
 }

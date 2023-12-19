@@ -44,21 +44,3 @@ bool Fighter::attemptAttack(Fighter *target, Weapon *weapon) {
     }
     return false;
 }
-
-Fighter::Fighter(std::string
-                 _model, int
-                 _maxHP, int
-                 _speed, int
-                 _maxNumEquipment, std::vector<std::unique_ptr<Weapon>> _equipment,
-                 std::pair<int, int>
-                 _coordinates, int
-                 _detectionRadius) {
-    model = _model;
-    HP = _maxHP;
-    maxHP = _maxHP;
-    speed = _speed;
-    maxNumEquipment = _maxNumEquipment;
-    equipment = std::move(_equipment);
-    coordinates = _coordinates;
-    detectionRadius = _detectionRadius;
-}
