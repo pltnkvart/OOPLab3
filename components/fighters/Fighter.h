@@ -165,7 +165,7 @@ public:
      * @brief Функция которая определяет жив ли самолет.
      * @return если жив - true, false - если умер.
      */
-    bool isDead() {
+    const bool isDead() {
         if (HP <= 0) {
             return true;
         } else {

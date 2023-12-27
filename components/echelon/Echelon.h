@@ -27,6 +27,8 @@ public:
     [[nodiscard]] int getNumFighters() const { return static_cast<int>(fighters.size()); }
 
     void simulateAirRaid(const Echelon &targetEchelon, std::vector<Bullet> &bullets);
+
+    bool areAllFightersDead() const;
 };
 
 #endif //_ECHELON_H

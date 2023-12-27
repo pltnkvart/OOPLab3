@@ -55,3 +55,12 @@ void Echelon::simulateAirRaid(const Echelon &targetEchelon, std::vector<Bullet> 
         }
     }
 }
+
+bool Echelon::areAllFightersDead() const {
+    for (const auto& fighter : fighters) {
+        if (!fighter->isDead()) {
+            return false;
+        }
+    }
+    return true;
+}

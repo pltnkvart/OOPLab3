@@ -5,9 +5,6 @@
 #include <fstream>
 //#include <nlohmann/json.hpp>
 
-#define NUM_FRAMES_PER_LINE     5
-#define NUM_LINES               5
-
 #define screenWidth 1280
 #define screenHeight 720
 
@@ -18,7 +15,8 @@ enum GameState {
     PLAYER_TURN,
     ENEMY_TURN,
     SHOOTING,
-    GAME_OVER,
+    GAME_OVER_WIN_ENEMY,
+    GAME_OVER_WIN_USER,
     EXIT
 };
 
@@ -165,7 +163,7 @@ int main() {
                         gameState = PLAYING;
                     }
                     if (CheckCollisionPointRec(GetMousePosition(), exitButton)) {
-                        break;
+                        gameState = EXIT;
                     }
                 }
                 break;
@@ -229,6 +227,7 @@ int main() {
                 break;
 
             case SHOOTING:
+                scrollingBack -= 0.1f;
                 BeginMode3D(camera);
                 drawEchelon(plane, bounds, camera, selectedFighter, UserEchelon, LIME);
                 drawEchelon(plane, bounds, camera, selectedFighter, EnemyEchelon, RED);
@@ -240,7 +239,6 @@ int main() {
                     DrawText("Enemy turn", shootButton.x + 75, shootButton.y + 15, 20, BLACK);
                 }
                 for (auto &bullet: bullets) {
-                    std::cout << bullet.success << std::endl;
                     if (bullet.isActive) {
                         Vector3 direction = Vector3Normalize(Vector3Subtract(bullet.target, bullet.position));
                         bullet.position = Vector3Add(bullet.position,
@@ -260,23 +258,49 @@ int main() {
                         gameState = PLAYER_TURN;
                     }
                 }
+                if (UserEchelon.areAllFightersDead()) {
+                    gameState = GAME_OVER_WIN_ENEMY;
+                } else if (EnemyEchelon.areAllFightersDead()) {
+                    gameState = GAME_OVER_WIN_USER;
+                }
                 break;
 
-//            case GAME_OVER:
-//
-//                // If restart conditions met, change to MENU state
-//                break;
+            case GAME_OVER_WIN_USER:
+                DrawText("You Win!", screenWidth / 2 - MeasureText("You Win!", 30) / 2, screenHeight / 2 - 200, 30, BLACK);
+                DrawRectangleRec(exitButton, WHITE);
+                DrawText("Exit", exitButton.x + 80, exitButton.y + 15, 20, BLACK);
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    if (CheckCollisionPointRec(GetMousePosition(), exitButton)) {
+                        gameState = EXIT;
+                        break;
+                    }
+                }
+                break;
+
+            case GAME_OVER_WIN_ENEMY:
+                DrawText("You Lose", screenWidth / 2 - MeasureText("You Lose", 30) / 2, screenHeight / 2 - 200, 30, BLACK);
+                DrawRectangleRec(exitButton, WHITE);
+                DrawText("Exit", exitButton.x + 80, exitButton.y + 15, 20, BLACK);
+                if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON)) {
+                    if (CheckCollisionPointRec(GetMousePosition(), exitButton)) {
+                        gameState = EXIT;
+                        break;
+                    }
+                }
+                break;
+
+            case EXIT: goto EndWhile;
         }
 
         EndDrawing();
     }
-
+    EndWhile: ;
 // De-Initialization
 //--------------------------------------------------------------------------------------
     UnloadTexture(background);
     UnloadModel(plane);
     UnloadTexture(menuBackground);
-
+    CloseWindow();
 //--------------------------------------------------------------------------------------
     return 0;
 }
