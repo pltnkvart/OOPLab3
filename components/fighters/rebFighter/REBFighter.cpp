@@ -1,9 +1,10 @@
 #include "REBFighter.h"
 
 
-bool REBFighter::attemptAttack(Fighter *target, Weapon *weapon) {
+bool REBFighter::attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Weapon> weapon) {
     if (weapon->getWeaponAttackRadius() >= target->getDetectionRadius() * suppressionCoef) {
-        std::mt19937 gen(std::time(nullptr));
+        auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::mt19937 gen(static_cast<unsigned>(seed));
         std::uniform_int_distribution<int> distribution(0, 100);
         int chance = distribution(gen);
         Projectile prj = weapon->fire();

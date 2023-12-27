@@ -6,11 +6,14 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(components/echelon)
 add_subdirectory(components/fighters)
 add_subdirectory(components/weapons)
+add_subdirectory(components/mission)
 add_subdirectory(template)
 
 add_executable(Lab3 main.cpp)
 
-target_link_libraries(Lab3 fighters weapons table echelon)
+find_package(nlohmann_json 3.11.3 REQUIRED)
+
+target_link_libraries(Lab3 fighters weapons table echelon mission nlohmann_json::nlohmann_json)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)

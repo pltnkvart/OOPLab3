@@ -12,7 +12,7 @@ class RadioFighter : public Fighter {
 private:
     int maskingIgnoreCoef;
 public:
-    bool attemptAttack(Fighter *target, Weapon *weapon) override;
+    bool attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Weapon> weapon) override;
 };
 
 #endif //_RADIOFIGHTER_H

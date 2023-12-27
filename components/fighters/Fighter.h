@@ -153,7 +153,25 @@ public:
      * @param weapon Вооружение для атаки.
      * @return true, если есть попадание, false в противном случае.
      */
-    virtual bool attemptAttack(Fighter *target, Weapon *weapon);
+    virtual bool attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Weapon> weapon);
+
+    /**
+     * @brief Функция для получения оружия с максимальным уроном.
+     * @return Оружие с максимальным уроном.
+     */
+    std::shared_ptr<Weapon> getMostPowerfulWeapon() const;
+
+    /**
+     * @brief Функция которая определяет жив ли самолет.
+     * @return если жив - true, false - если умер.
+     */
+    bool isDead() {
+        if (HP <= 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * @brief Виртуальный деструктор по умолчанию.

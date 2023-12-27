@@ -1,0 +1,64 @@
+[
+  {
+    "command": "Echelon1",
+    "coordinates": [
+      1,
+      2
+    ],
+    "fighters": [
+      {
+        "model": "F-16",
+        "HP": 100,
+        "maxHP": 100,
+        "speed": 800,
+        "maxNumEquipment": 1,
+        "equipment": [
+          {
+            "type": "Gun",
+            "name": "gun1",
+            "damage": 40,
+            "fireRate": 10,
+            "range": 5,
+            "ammo": 50
+          }
+        ],
+        "coordinates": [
+          3,
+          4
+        ],
+        "detectionRadius": 10
+      }
+    ]
+  },
+  {
+    "command": "Echelon2",
+    "coordinates": [
+      -3,
+      0
+    ],
+    "fighters": [
+      {
+        "model": "F-1",
+        "HP": 100,
+        "maxHP": 100,
+        "speed": 800,
+        "maxNumEquipment": 1,
+        "equipment": [
+          {
+            "type": "Gun",
+            "name": "gun2",
+            "damage": 60,
+            "fireRate": 10,
+            "range": 5,
+            "ammo": 50
+          }
+        ],
+        "coordinates": [
+          3,
+          4
+        ],
+        "detectionRadius": 10
+      }
+    ]
+  }
+]

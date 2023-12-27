@@ -4,9 +4,10 @@ int CamouflageFighter::getDetectionRadius() {
     return detectionRadius * detectionCoef;
 }
 
-bool CamouflageFighter::attemptAttack(Fighter *target, Weapon *weapon) {
+bool CamouflageFighter::attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Weapon> weapon) {
     if (weapon->getWeaponAttackRadius() >= target->getDetectionRadius()) {
-        std::mt19937 gen(std::time(nullptr));
+        auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::mt19937 gen(static_cast<unsigned>(seed));
         std::uniform_int_distribution<int> distribution(0, 100);
         int chance = distribution(gen);
         Projectile prj = weapon->fire();

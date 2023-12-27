@@ -16,7 +16,7 @@ private:
 public:
     int getDetectionRadius() override;
 
-    bool attemptAttack(Fighter *target, Weapon *weapon) override;
+    bool attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Weapon> weapon) override;
 };
 
 #endif //_SCOUTFIGHTER_H
