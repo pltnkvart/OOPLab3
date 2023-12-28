@@ -1,10 +1,13 @@
 #ifndef _ECHELON_H
 #define _ECHELON_H
 
-#include "../fighters/Fighter.h"
 #include <iostream>
 #include <list>
+#include <thread>
+#include <vector>
+#include <chrono>
 #include "../../game/bullets/bullet.h"
+#include "../fighters/Fighter.h"
 
 class Echelon {
 private:
@@ -28,7 +31,9 @@ public:
 
     void simulateAirRaid(const Echelon &targetEchelon, std::vector<Bullet> &bullets);
 
-    bool areAllFightersDead() const;
+    void simulateAirRaidThread(const Echelon &targetEchelon, std::vector<Bullet> &bullets, int start, int end);
+
+    [[nodiscard]] bool areAllFightersDead() const;
 };
 
 #endif //_ECHELON_H

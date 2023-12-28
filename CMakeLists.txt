@@ -6,14 +6,14 @@ set(CMAKE_CXX_STANDARD 20)
 add_subdirectory(components/echelon)
 add_subdirectory(components/fighters)
 add_subdirectory(components/weapons)
-add_subdirectory(components/mission)
 add_subdirectory(template)
 
 add_executable(Lab3 main.cpp)
 
-find_package(nlohmann_json 3.11.3 REQUIRED)
+#find_package(nlohmann_json 3.11.3 REQUIRED)
+#nlohmann_json::nlohmann_json
 
-target_link_libraries(Lab3 fighters weapons table echelon mission nlohmann_json::nlohmann_json)
+target_link_libraries(Lab3 fighters weapons table echelon)
 
 # Generate compile_commands.json
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -40,7 +40,8 @@ endif()
 # Our Project
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
-
+add_compile_options(-fsanitize=thread -fsanitize=thread -fPIE -pie -g)
+add_link_options(-fsanitize=thread)
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)

@@ -33,11 +33,13 @@ public:
      * @param _detectionRadius Радиус обнаружения истребителя.
      */
     Fighter(std::string _model, int _HP, int _maxHP, int _speed,
-            int _maxNumEquipment, const std::pair<int, int> &_coordinates,
+            int _maxNumEquipment, std::vector<std::shared_ptr<Weapon>> _equipment,
+            const std::pair<int, int> &_coordinates,
             int _detectionRadius)
             : model(std::move(_model)), HP(_HP), maxHP(_maxHP), speed(_speed),
-              maxNumEquipment(_maxNumEquipment), coordinates(_coordinates),
+              maxNumEquipment(_maxNumEquipment), equipment(std::move(_equipment)), coordinates(_coordinates),
               detectionRadius(_detectionRadius) {};
+
 
     /**
      * @brief Возвращает модель истребителя.
@@ -137,6 +139,7 @@ public:
 
     /**
      * @brief Виртуальная функция для получения радиуса атаки истребителя.
+     * @throw std::runtime_error Нет оружий у самолета.
      * @return Радиус атаки истребителя.
      */
     virtual int getAttackRadius();
@@ -159,7 +162,7 @@ public:
      * @brief Функция для получения оружия с максимальным уроном.
      * @return Оружие с максимальным уроном.
      */
-    std::shared_ptr<Weapon> getMostPowerfulWeapon() const;
+    [[nodiscard]] std::shared_ptr<Weapon> getMostPowerfulWeapon() const;
 
     /**
      * @brief Функция которая определяет жив ли самолет.

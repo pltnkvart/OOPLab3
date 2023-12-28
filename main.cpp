@@ -2,6 +2,7 @@
 #include <raymath.h>
 #include "components/echelon/Echelon.h"
 #include "components/weapons/gun/gun.h"
+#include "components/weapons/rocket/rocketLauncher.h"
 #include <fstream>
 //#include <nlohmann/json.hpp>
 
@@ -53,26 +54,29 @@ void drawPlaneInfo(const std::shared_ptr<Fighter> &fighter) {
 }
 
 void initializeEchelons() {
-    Gun gun("gun", 40, 10, 5, 50);
-    auto gun1 = std::make_shared<Gun>(gun);
-    Fighter f1("F-16", 100, 100, 800, 1, {3, 4}, 10);
-    Fighter f2("F-1", 100, 100, 800, 1, {-2, 1}, 5);
-    Fighter f3("F-11", 100, 100, 800, 1, {0, -3}, 10);
-    Fighter f4("F-23", 100, 100, 800, 1, {5, -1}, 10);
-    std::vector<std::shared_ptr<Weapon>> equipment;
-    equipment.push_back(gun1);
+    Gun gun1("gun1", 40, 15, 5, 50);
+    Gun gun2("gun2", 25, 10, 5, 50);
+    RocketLauncher rocket1("rocket1", 100, 10, 5, 50, 50);
+    auto g1 = std::make_shared<Gun>(gun1);
+    auto g2 = std::make_shared<Gun>(gun2);
+    Fighter f1("F-16", 100, 100, 300, 1, {g1, g2},{1, 5}, 10);
+    Fighter f2("F-1", 100, 100, 220, 1,  {g1, g2}, {-2, 1}, 5);
+    Fighter f3("F-11", 100, 100, 140, 1, {g1, g2}, {0, -3}, 10);
+    Fighter f4("F-23", 100, 100, 240, 1, {g1, g2},  {5, -1}, 10);
+    Fighter f5("I-43", 100, 100, 250, 1, {g1, g2},  {4, -4}, 10);
+    Fighter f6("L-05", 100, 100, 190, 1, {g1, g2},  {4, 2}, 10);
     auto fighter1 = std::make_shared<Fighter>(f1);
     auto fighter2 = std::make_shared<Fighter>(f2);
     auto fighter3 = std::make_shared<Fighter>(f3);
     auto fighter4 = std::make_shared<Fighter>(f4);
-    fighter1->setEquipment(equipment);
-    fighter2->setEquipment(equipment);
-    fighter3->setEquipment(equipment);
-    fighter4->setEquipment(equipment);
+    auto fighter5 = std::make_shared<Fighter>(f5);
+    auto fighter6 = std::make_shared<Fighter>(f6);
     UserEchelon.addFighter(fighter1);
     UserEchelon.addFighter(fighter2);
-    EnemyEchelon.addFighter(fighter3);
+    UserEchelon.addFighter(fighter3);
     EnemyEchelon.addFighter(fighter4);
+    EnemyEchelon.addFighter(fighter5);
+    EnemyEchelon.addFighter(fighter6);
 }
 
 BoundingBox RotateBoundingBox(const BoundingBox &box, float angleDegrees) {

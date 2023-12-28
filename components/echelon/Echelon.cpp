@@ -1,5 +1,7 @@
 #include "Echelon.h"
 
+std::mutex bulletsMutex;
+
 void Echelon::addFighter(std::shared_ptr<Fighter> fighter) {
     fighters.push_back(std::move(fighter));
 }
@@ -32,11 +34,34 @@ const std::list<std::shared_ptr<Fighter>> &Echelon::getFighters() const {
 }
 
 void Echelon::simulateAirRaid(const Echelon &targetEchelon, std::vector<Bullet> &bullets) {
-    std::cout << "Simulating air raid on echelon '" << targetEchelon.getCommand() << "' at coordinates ("
-              << targetEchelon.getCoordinates().first << ", " << targetEchelon.getCoordinates().second << ")."
-              << std::endl;
+    std::cout << "Simulating air raid on echelon" << targetEchelon.getCommand() << std::endl;
 
-    for (auto &attacker: fighters) {
+    std::vector<std::thread> threads;
+
+    int numThreads = std::min<int>(static_cast<int>(fighters.size()), std::thread::hardware_concurrency());
+
+    int fightersPerThread = fighters.size() / numThreads;
+
+    for (int i = 0; i < numThreads; ++i) {
+        int startIndex = i * fightersPerThread;
+        int endIndex = (i == numThreads - 1) ? fighters.size() : (i + 1) * fightersPerThread;
+        threads.emplace_back(&Echelon::simulateAirRaidThread, this, std::ref(targetEchelon), std::ref(bullets),
+                             startIndex, endIndex);
+    }
+
+    for (auto &thread: threads) {
+        thread.join();
+    }
+}
+
+
+void Echelon::simulateAirRaidThread(const Echelon &targetEchelon, std::vector<Bullet> &bullets, int startIndex,
+                                    int endIndex) {
+    std::lock_guard<std::mutex> lock(bulletsMutex);
+    auto it = fighters.begin();
+    std::advance(it, startIndex);
+    for (int i = startIndex; i < endIndex; ++i, ++it) {
+        auto &attacker = *it;
         for (auto &targetFighter: targetEchelon.getFighters()) {
             if (!targetFighter->isDead() && !attacker->isDead()) {
                 Vector3 start = {static_cast<float>(attacker->getCoordinates().first), 3.0f,
@@ -46,7 +71,7 @@ void Echelon::simulateAirRaid(const Echelon &targetEchelon, std::vector<Bullet> 
                 Bullet bullet{start, end};
                 if (attacker->attemptAttack(targetFighter, attacker->getMostPowerfulWeapon())) {
                     std::cout << "Fighter '" << targetFighter->getModel() << "' successfully attacked.\n" << std::endl;
-                    bullet.success = 1;
+                    bullet.success = true;
                 } else {
                     std::cout << "Fighter '" << targetFighter->getModel() << "' missed the attack.\n" << std::endl;
                 }
@@ -56,8 +81,9 @@ void Echelon::simulateAirRaid(const Echelon &targetEchelon, std::vector<Bullet> 
     }
 }
 
+
 bool Echelon::areAllFightersDead() const {
-    for (const auto& fighter : fighters) {
+    for (const auto &fighter: fighters) {
         if (!fighter->isDead()) {
             return false;
         }

@@ -1,3 +1,1 @@
-//
-// Created by Плотников Артем on 14.12.2023.
-//
+#include "table.h"

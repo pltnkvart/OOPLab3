@@ -2,8 +2,7 @@
 
 int Fighter::getAttackRadius() {
     if (equipment.empty()) {
-        std::cerr << "Equipment list is empty." << std::endl;
-        return -1;
+        throw std::runtime_error("Equipment list is empty.");
     }
     auto maxRadiusWeapon = equipment.begin();
     for (auto it = equipment.begin(); it != equipment.end(); ++it) {
@@ -34,7 +33,6 @@ bool Fighter::attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Wea
         std::uniform_int_distribution<int> distribution(0, 100);
         int chance = distribution(gen);
         Projectile prj = weapon->fire();
-
         std::cout << "hit rate - " << prj.getHitRate() << " chance - " << chance << std::endl;
         if (prj.getHitRate() > chance) {
             target->getDamage(prj);
@@ -43,14 +41,10 @@ bool Fighter::attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Wea
         }
         std::cout << "after shot - " << target->getHP() << std::endl;
     }
-
     return false;
 }
 
 std::shared_ptr<Weapon> Fighter::getMostPowerfulWeapon() const {
-    if (equipment.empty()) {
-        return nullptr;
-    }
     auto maxDamageWeapon = std::max_element(equipment.begin(), equipment.end(),
                                             [](const std::shared_ptr<Weapon> &weapon1,
                                                const std::shared_ptr<Weapon> &weapon2) {

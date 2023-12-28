@@ -10,7 +10,7 @@ public:
     bool isActive;
     bool success;
 public:
-    Bullet(Vector3 startPos, Vector3 targetPos) : position(startPos), target(targetPos), isActive(true), success(0) {};
+    Bullet(Vector3 startPos, Vector3 targetPos) : position(startPos), target(targetPos), isActive(true), success(false) {};
 };
 
 #endif //LAB3_BULLET_H
