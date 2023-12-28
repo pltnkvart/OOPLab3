@@ -19,11 +19,13 @@ enum GameState {
     GAME_OVER_WIN_USER,
     EXIT
 };
-
 bool isPlayerTurn = true;
 float bulletSpeed = 2.0f;
 
-//Texture groundTexture;
+// Models
+Model plane;
+BoundingBox planeBounds;
+Camera3D camera;
 
 Echelon UserEchelon;
 Echelon EnemyEchelon;
@@ -86,7 +88,7 @@ BoundingBox RotateBoundingBox(const BoundingBox &box, float angleDegrees) {
 
 
 void drawEchelon(Model plane, BoundingBox bounds, Camera3D camera, std::shared_ptr<Fighter> &selectedFighter,
-                 Echelon echelon, Color color) {
+                 const Echelon& echelon, Color color) {
 //    DrawPlane((Vector3) {0.0f, 0.0f, 0.0f}, (Vector2) {15.0f, 15.0f}, WHITE);
     for (const auto &fighter: echelon.getFighters()) {
         int x = fighter->getCoordinates().first;
@@ -125,20 +127,19 @@ int main() {
     //--------------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "MyGame");
     initializeEchelons();
-    Camera3D camera = initCamera();
+    camera = initCamera();
     GameState gameState = MENU;
 
     // Load Plane Model
-    Model plane = LoadModel("../resources/models/fighters/fighter1.glb");
-    BoundingBox bounds = GetMeshBoundingBox(plane.meshes[0]);
+    plane = LoadModel("../resources/models/fighters/fighter1.glb");
+    planeBounds = GetMeshBoundingBox(plane.meshes[0]);
     std::shared_ptr<Fighter> selectedFighter;
-    bounds.min = Vector3Scale(bounds.min, 0.05f);
-    bounds.max = Vector3Scale(bounds.max, 0.05f);
+    planeBounds.min = Vector3Scale(planeBounds.min, 0.05f);
+    planeBounds.max = Vector3Scale(planeBounds.max, 0.05f);
 
     // Load Background
     Texture background = LoadTexture("../resources/background/sky2.png");
     float scrollingBack = 0.0f;
-//    groundTexture = LoadTexture("../resources/ground_texture.jpg");
 
     Texture menuBackground = LoadTexture("../resources/background/menu.png");
     SetTargetFPS(120);
@@ -187,8 +188,8 @@ int main() {
                     UpdateCamera(&camera, CAMERA_FREE);
                 }
                 BeginMode3D(camera);
-                drawEchelon(plane, bounds, camera, selectedFighter, UserEchelon, LIME);
-                drawEchelon(plane, bounds, camera, selectedFighter, EnemyEchelon, RED);
+                drawEchelon(plane, planeBounds, camera, selectedFighter, UserEchelon, LIME);
+                drawEchelon(plane, planeBounds, camera, selectedFighter, EnemyEchelon, RED);
                 DrawGrid(10, 2.0f);
                 EndMode3D();
                 DrawRectangleRec(shootButton, SKYBLUE);
@@ -213,11 +214,11 @@ int main() {
                     else DisableCursor();
                 }
                 if (!selectedFighter) {
-                    UpdateCamera(&camera, CAMERA_FREE);
+//                    UpdateCamera(&camera, CAMERA_FREE);
                 }
                 BeginMode3D(camera);
-                drawEchelon(plane, bounds, camera, selectedFighter, UserEchelon, LIME);
-                drawEchelon(plane, bounds, camera, selectedFighter, EnemyEchelon, RED);
+                drawEchelon(plane, planeBounds, camera, selectedFighter, UserEchelon, LIME);
+                drawEchelon(plane, planeBounds, camera, selectedFighter, EnemyEchelon, RED);
                 DrawGrid(10, 2.0f);
                 EndMode3D();
                 std::cout << "меня атакают" << std::endl;
@@ -229,8 +230,8 @@ int main() {
             case SHOOTING:
                 scrollingBack -= 0.1f;
                 BeginMode3D(camera);
-                drawEchelon(plane, bounds, camera, selectedFighter, UserEchelon, LIME);
-                drawEchelon(plane, bounds, camera, selectedFighter, EnemyEchelon, RED);
+                drawEchelon(plane, planeBounds, camera, selectedFighter, UserEchelon, LIME);
+                drawEchelon(plane, planeBounds, camera, selectedFighter, EnemyEchelon, RED);
                 DrawGrid(10, 2.0f);
                 EndMode3D();
                 if (!isPlayerTurn) {
