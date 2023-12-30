@@ -8,7 +8,12 @@ add_subdirectory(components/fighters)
 add_subdirectory(components/weapons)
 add_subdirectory(template)
 
+add_compile_options(-fsanitize=thread -g)
+add_link_options(-fsanitize=thread)
+
 add_executable(Lab3 main.cpp)
+
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 #find_package(nlohmann_json 3.11.3 REQUIRED)
 #nlohmann_json::nlohmann_json
@@ -40,8 +45,9 @@ endif()
 # Our Project
 #set(raylib_VERBOSE 1)
 target_link_libraries(${PROJECT_NAME} raylib)
-add_compile_options(-fsanitize=thread -fsanitize=thread -fPIE -pie -g)
-add_link_options(-fsanitize=thread)
+
+
+
 
 # Checks if OSX and links appropriate frameworks (Only required on MacOS)
 if (APPLE)

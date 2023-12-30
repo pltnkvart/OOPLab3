@@ -38,7 +38,7 @@ void Echelon::simulateAirRaid(const Echelon &targetEchelon, std::vector<Bullet> 
 
     std::vector<std::thread> threads;
 
-    int numThreads = std::min<int>(static_cast<int>(fighters.size()), std::thread::hardware_concurrency());
+    size_t numThreads = std::min<size_t>(fighters.size(), std::thread::hardware_concurrency());
 
     int fightersPerThread = fighters.size() / numThreads;
 
@@ -57,7 +57,6 @@ void Echelon::simulateAirRaid(const Echelon &targetEchelon, std::vector<Bullet> 
 
 void Echelon::simulateAirRaidThread(const Echelon &targetEchelon, std::vector<Bullet> &bullets, int startIndex,
                                     int endIndex) {
-    std::lock_guard<std::mutex> lock(bulletsMutex);
     auto it = fighters.begin();
     std::advance(it, startIndex);
     for (int i = startIndex; i < endIndex; ++i, ++it) {
@@ -70,11 +69,10 @@ void Echelon::simulateAirRaidThread(const Echelon &targetEchelon, std::vector<Bu
                                static_cast<float>(targetFighter->getCoordinates().second)};
                 Bullet bullet{start, end};
                 if (attacker->attemptAttack(targetFighter, attacker->getMostPowerfulWeapon())) {
-                    std::cout << "Fighter '" << targetFighter->getModel() << "' successfully attacked.\n" << std::endl;
+//                    std::cout << "Fighter '" << targetFighter->getModel() << "' successfully attacked.\n" << std::endl;
                     bullet.success = true;
-                } else {
-                    std::cout << "Fighter '" << targetFighter->getModel() << "' missed the attack.\n" << std::endl;
                 }
+                std::lock_guard<std::mutex> lock(bulletsMutex);
                 bullets.push_back(bullet);
             }
         }

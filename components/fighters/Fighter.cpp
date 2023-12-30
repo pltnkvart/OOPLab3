@@ -24,8 +24,8 @@ void Fighter::getDamage(Projectile projectile) {
 }
 
 bool Fighter::attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Weapon> weapon) {
-    std::cout << this->getModel() << " is attacking " << target->getModel() << std::endl;
-    std::cout << "before shot - " << target->getHP() << std::endl;
+//    std::cout << this->getModel() << " is attacking " << target->getModel() << std::endl;
+//    std::cout << "before shot - " << target->getHP() << std::endl;
 
     if (weapon->getWeaponAttackRadius() >= target->getDetectionRadius()) {
         auto seed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
@@ -33,13 +33,13 @@ bool Fighter::attemptAttack(std::shared_ptr<Fighter> target, std::shared_ptr<Wea
         std::uniform_int_distribution<int> distribution(0, 100);
         int chance = distribution(gen);
         Projectile prj = weapon->fire();
-        std::cout << "hit rate - " << prj.getHitRate() << " chance - " << chance << std::endl;
+//        std::cout << "hit rate - " << prj.getHitRate() << " chance - " << chance << std::endl;
         if (prj.getHitRate() > chance) {
             target->getDamage(prj);
-            std::cout << "after shot - " << target->getHP() << std::endl;
+//            std::cout << "after shot - " << target->getHP() << std::endl;
             return true;
         }
-        std::cout << "after shot - " << target->getHP() << std::endl;
+//        std::cout << "after shot - " << target->getHP() << std::endl;
     }
     return false;
 }
